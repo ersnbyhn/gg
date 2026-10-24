@@ -100,6 +100,7 @@
             font-size: 14px;
             font-weight: 500;
             height: 18px;
+            text-align: center;
         }
 
         /* 2. ANA UYGULAMA EKRANI */
@@ -336,7 +337,7 @@
 
         <div class="login-box">
             <input type="password" id="passInput" placeholder="Şifrenizi Girin" autofocus>
-            <button onclick="sifreKontrol()">Giriş Yap</button>
+            <button type="button" onclick="sifreKontrol()">Giriş Yap</button>
             <div class="error-msg" id="errorText"></div>
         </div>
     </div>
@@ -400,6 +401,13 @@
 
         let aktifAyIndex = null;
 
+        // Enter tuşu ile giriş yapabilme desteği
+        document.getElementById("passInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sifreKontrol();
+            }
+        });
+
         function sifreKontrol() {
             var girilenSifre = document.getElementById("passInput").value;
             if (girilenSifre === "8290028") {
@@ -407,8 +415,9 @@
                 document.getElementById("appScreen").style.display = "flex";
                 aylariOlustur();
             } else {
-                document.getElementById("errorText").innerText = "Hatalı şifre!";
+                document.getElementById("errorTextinnerText" || "errorText").innerText = "Hatalı şifre!";
                 document.getElementById("passInput").value = "";
+                document.getElementById("passInput").focus();
             }
         }
 
@@ -457,4 +466,84 @@
             });
         }
 
-        function ayDetayAc(index
+        function ayDetayAc(index) {
+            aktifAyIndex = index;
+            document.getElementById("monthsGrid").style.display = "none";
+            document.getElementById("monthDetailScreen").style.display = "flex";
+            document.getElementById("selectedMonthTitle").innerText = aylar[index] + " Ayı";
+            tabloGuncelle();
+        }
+
+        function aylaraDon() {
+            aktifAyIndex = null;
+            aylariOlustur();
+        }
+
+        function tabloGuncelle() {
+            const tbody = document.getElementById("tableBody");
+            tbody.innerHTML = "";
+
+            const tumVeriler = tumVerileriAl();
+            const ayVerisi = tumVeriler[aktifAyIndex] || [];
+
+            ayVerisi.forEach((item, itemIndex) => {
+                const row = tbody.insertRow();
+                
+                const isGelir = item.tur === "gelir";
+                const turClass = isGelir ? "txt-gelir" : "txt-gider";
+                const turEtiket = isGelir ? "Gelir" : "Gider";
+
+                row.insertCell(0).innerText = item.aciklama;
+                
+                const cellTur = row.insertCell(1);
+                cellTur.innerText = turEtiket;
+                cellTur.className = turClass;
+
+                const cellTutar = row.insertCell(2);
+                cellTutar.innerText = parseFloat(item.tutar).toLocaleString('tr-TR') + " ₺";
+                cellTutar.className = turClass;
+
+                row.insertCell(3).innerHTML = `<button class="delete-btn" onclick="islemiSil(${itemIndex})">Sil</button>`;
+            });
+        }
+
+        function islemiEkle() {
+            const aciklama = document.getElementById("inputAçıklama").value.trim();
+            const tutar = document.getElementById("inputTutar").value;
+            const tur = document.getElementById("selectTur").value;
+
+            if (!aciklama || !tutar || tutar <= 0) {
+                alert("Lütfen geçerli bir açıklama ve tutar girin!");
+                return;
+            }
+
+            const tumVeriler = tumVerileriAl();
+            if (!tumVeriler[aktifAyIndex]) {
+                tumVeriler[aktifAyIndex] = [];
+            }
+
+            tumVeriler[aktifAyIndex].push({
+                aciklama: aciklama,
+                tutar: parseFloat(tutar),
+                tur: tur
+            });
+
+            tumVerileriKaydet(tumVeriler);
+
+            document.getElementById("inputAçıklama").value = "";
+            document.getElementById("inputTutar").value = "";
+
+            tabloGuncelle();
+        }
+
+        function islemiSil(itemIndex) {
+            const tumVeriler = tumVerileriAl();
+            if (tumVeriler[aktifAyIndex]) {
+                tumVeriler[aktifAyIndex].splice(itemIndex, 1);
+                tumVerileriKaydet(tumVeriler);
+                tabloGuncelle();
+            }
+        }
+    </script>
+</body>
+</html>
