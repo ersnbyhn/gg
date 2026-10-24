@@ -206,6 +206,7 @@
             padding: 8px 12px;
             border-radius: 10px;
             border: 1px solid #2c2c2e;
+            flex-shrink: 0;
         }
 
         .detail-header h2 {
@@ -224,49 +225,6 @@
             cursor: pointer;
         }
 
-        .ios-card-form {
-            background: #1c1c1e;
-            border-radius: 10px;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            border: 1px solid #2c2c2e;
-        }
-
-        .ios-card-form input, .ios-card-form select {
-            padding: 8px;
-            font-size: 13px;
-            border: 1px solid #3a3a3c;
-            border-radius: 6px;
-            background-color: #2c2c2e;
-            color: #ffffff;
-            outline: none;
-            text-align: center;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 6px;
-        }
-
-        .form-row input, .form-row select {
-            flex: 1;
-        }
-
-        .add-btn {
-            padding: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: white;
-            background-color: #30d158;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .add-btn:active { opacity: 0.7; }
-
         .ios-table-container {
             flex: 1;
             overflow-y: auto;
@@ -284,11 +242,11 @@
 
         th, td {
             border: 1px solid #48484a;
-            padding: 6px 3px;
+            padding: 7px 4px;
             text-align: center;
-            font-size: 10px;
+            font-size: 11px;
             color: #ffffff;
-            word-break: break-all;
+            vertical-align: middle;
         }
 
         th {
@@ -300,19 +258,20 @@
             z-index: 10;
         }
 
+        .item-input {
+            width: 100%;
+            background: #2c2c2e;
+            border: 1px solid #3a3a3c;
+            border-radius: 6px;
+            color: #ffffff;
+            text-align: center;
+            padding: 5px;
+            font-size: 12px;
+            outline: none;
+        }
+
         .txt-gelir { color: #30d158; font-weight: 600; }
         .txt-gider { color: #ff453a; font-weight: 600; }
-
-        .delete-btn {
-            background-color: #ff453a;
-            color: white;
-            border: none;
-            padding: 3px 5px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 9px;
-            font-weight: 600;
-        }
 
         .phone-footer {
             height: 22px;
@@ -352,33 +311,20 @@
         <!-- 12 AY GRID -->
         <div class="months-grid" id="monthsGrid"></div>
 
-        <!-- AY DETAY SAYFASI (GELİR/GİDER EKLEME) -->
+        <!-- AY DETAY SAYFASI (9 SABİT KALEM) -->
         <div class="month-detail-screen" id="monthDetailScreen">
             <div class="detail-header">
                 <button class="back-btn" onclick="aylaraDon()">‹ Aylara Dön</button>
                 <h2 id="selectedMonthTitle">Ocak</h2>
             </div>
 
-            <div class="ios-card-form">
-                <input type="text" id="inputAçıklama" placeholder="Açıklama (Örn: Maaş, Kira)">
-                <div class="form-row">
-                    <input type="number" id="inputTutar" placeholder="Tutar (₺)" step="any">
-                    <select id="selectTur">
-                        <option value="gelir">Gelir (+)</option>
-                        <option value="gider">Gider (-)</option>
-                    </select>
-                </div>
-                <button class="add-btn" onclick="islemiEkle()">Kaydet</button>
-            </div>
-
             <div class="ios-table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 45%;">Açıklama</th>
+                            <th style="width: 45%;">Kalem</th>
                             <th style="width: 25%;">Tür</th>
-                            <th style="width: 20%;">Tutar</th>
-                            <th style="width: 10%;">Sil</th>
+                            <th style="width: 30%;">Tutar (₺)</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
@@ -399,9 +345,21 @@
             "Eylül", "Ekim", "Kasım", "Aralık"
         ];
 
+        // 9 Sabit Kalem ve Simgeleri
+        const sabitKalemler = [
+            { ad: "Kredi", simge: "🏦", tur: "gider" },
+            { ad: "Kredi Kartı", simge: "💳", tur: "gider" },
+            { ad: "Elektrik", simge: "⚡", tur: "gider" },
+            { ad: "Su", simge: "💧", tur: "gider" },
+            { ad: "Doğalgaz", simge: "🔥", tur: "gider" },
+            { ad: "Cep Telefonu", simge: "📱", tur: "gider" },
+            { ad: "İnternet", simge: "🌐", tur: "gider" },
+            { ad: "Diğer", simge: "📌", tur: "gider" },
+            { ad: "Maaş", simge: "💵", tur: "gelir" }
+        ];
+
         let aktifAyIndex = null;
 
-        // Enter tuşu ile giriş yapabilme desteği
         document.getElementById("passInput").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 sifreKontrol();
@@ -415,19 +373,19 @@
                 document.getElementById("appScreen").style.display = "flex";
                 aylariOlustur();
             } else {
-                document.getElementById("errorTextinnerText" || "errorText").innerText = "Hatalı şifre!";
+                document.getElementById("errorText").innerText = "Hatalı şifre!";
                 document.getElementById("passInput").value = "";
                 document.getElementById("passInput").focus();
             }
         }
 
         function tumVerileriAl() {
-            var veriler = localStorage.getItem("gelirGiderData");
+            var veriler = localStorage.getItem("gelirGiderSabitData");
             return veriler ? JSON.parse(veriler) : {};
         }
 
         function tumVerileriKaydet(data) {
-            localStorage.setItem("gelirGiderData", JSON.stringify(data));
+            localStorage.setItem("gelirGiderSabitData", JSON.stringify(data));
         }
 
         function aylariOlustur() {
@@ -439,13 +397,14 @@
             const tumVeriler = tumVerileriAl();
 
             aylar.forEach((ay, index) => {
-                const ayVerisi = tumVeriler[index] || [];
+                const ayVerisi = tumVeriler[index] || {};
                 let toplamGelir = 0;
                 let toplamGider = 0;
 
-                ayVerisi.forEach(item => {
-                    if (item.tur === "gelir") toplamGelir += parseFloat(item.tutar);
-                    else toplamGider += parseFloat(item.tutar);
+                sabitKalemler.forEach((kalem, kIndex) => {
+                    let tutar = parseFloat(ayVerisi[kIndex]) || 0;
+                    if (kalem.tur === "gelir") toplamGelir += tutar;
+                    else toplamGider += tutar;
                 });
 
                 let bakiye = toplamGelir - toplamGider;
@@ -484,65 +443,40 @@
             tbody.innerHTML = "";
 
             const tumVeriler = tumVerileriAl();
-            const ayVerisi = tumVeriler[aktifAyIndex] || [];
+            const ayVerisi = tumVeriler[aktifAyIndex] || {};
 
-            ayVerisi.forEach((item, itemIndex) => {
+            sabitKalemler.forEach((kalem, kIndex) => {
                 const row = tbody.insertRow();
                 
-                const isGelir = item.tur === "gelir";
+                const isGelir = kalem.tur === "gelir";
                 const turClass = isGelir ? "txt-gelir" : "txt-gider";
-                const turEtiket = isGelir ? "Gelir" : "Gider";
+                const turEtiket = isGelir ? "Gelir (+)" : "Gider (-)";
+                const mevcutTutar = ayVerisi[kIndex] !== undefined ? ayVerisi[kIndex] : "";
 
-                row.insertCell(0).innerText = item.aciklama;
+                row.insertCell(0).innerHTML = `${kalem.simge} ${kalem.ad}`;
                 
                 const cellTur = row.insertCell(1);
                 cellTur.innerText = turEtiket;
                 cellTur.className = turClass;
 
                 const cellTutar = row.insertCell(2);
-                cellTutar.innerText = parseFloat(item.tutar).toLocaleString('tr-TR') + " ₺";
-                cellTutar.className = turClass;
-
-                row.insertCell(3).innerHTML = `<button class="delete-btn" onclick="islemiSil(${itemIndex})">Sil</button>`;
+                cellTutar.innerHTML = `<input type="number" class="item-input" placeholder="0" value="${mevcutTutar}" oninput="tutarGuncelle(${kIndex}, this.value)" step="any">`;
             });
         }
 
-        function islemiEkle() {
-            const aciklama = document.getElementById("inputAçıklama").value.trim();
-            const tutar = document.getElementById("inputTutar").value;
-            const tur = document.getElementById("selectTur").value;
-
-            if (!aciklama || !tutar || tutar <= 0) {
-                alert("Lütfen geçerli bir açıklama ve tutar girin!");
-                return;
-            }
-
+        function tutarGuncelle(kIndex, deger) {
             const tumVeriler = tumVerileriAl();
             if (!tumVeriler[aktifAyIndex]) {
-                tumVeriler[aktifAyIndex] = [];
+                tumVeriler[aktifAyIndex] = {};
             }
 
-            tumVeriler[aktifAyIndex].push({
-                aciklama: aciklama,
-                tutar: parseFloat(tutar),
-                tur: tur
-            });
+            if (deger === "" || parseFloat(deger) < 0) {
+                delete tumVeriler[aktifAyIndex][kIndex];
+            } else {
+                tumVeriler[aktifAyIndex][kIndex] = parseFloat(deger);
+            }
 
             tumVerileriKaydet(tumVeriler);
-
-            document.getElementById("inputAçıklama").value = "";
-            document.getElementById("inputTutar").value = "";
-
-            tabloGuncelle();
-        }
-
-        function islemiSil(itemIndex) {
-            const tumVeriler = tumVerileriAl();
-            if (tumVeriler[aktifAyIndex]) {
-                tumVeriler[aktifAyIndex].splice(itemIndex, 1);
-                tumVerileriKaydet(tumVeriler);
-                tabloGuncelle();
-            }
         }
     </script>
 </body>
