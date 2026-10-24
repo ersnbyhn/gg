@@ -233,7 +233,7 @@
             display: none;
             flex: 1;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             overflow: hidden;
             width: 100%;
             height: 100%;
@@ -244,14 +244,14 @@
             justify-content: space-between;
             align-items: center;
             background: #1c1c1e;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 10px;
             border: 1px solid #2c2c2e;
             flex-shrink: 0;
         }
 
         .detail-header h2 {
-            font-size: 15px;
+            font-size: 14px;
             color: #ffffff;
         }
 
@@ -259,9 +259,9 @@
             background-color: #0a84ff;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
         }
@@ -283,7 +283,7 @@
 
         th, td {
             border: 1px solid #48484a;
-            padding: 7px 4px;
+            padding: 6px 3px;
             text-align: center;
             font-size: 11px;
             color: #ffffff;
@@ -306,8 +306,8 @@
             border-radius: 6px;
             color: #ffffff;
             text-align: center;
-            padding: 5px;
-            font-size: 12px;
+            padding: 4px;
+            font-size: 11px;
             outline: none;
             user-select: text;
             -webkit-user-select: text;
@@ -315,6 +315,57 @@
 
         .txt-gelir { color: #30d158; font-weight: 600; }
         .txt-gider { color: #ff453a; font-weight: 600; }
+
+        /* Ekstra Ekleme Form Alanı */
+        .extra-form-box {
+            background: #1c1c1e;
+            border-radius: 10px;
+            padding: 6px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            border: 1px solid #2c2c2e;
+            flex-shrink: 0;
+        }
+
+        .extra-form-row {
+            display: flex;
+            gap: 4px;
+        }
+
+        .extra-form-box input, .extra-form-box select {
+            background: #2c2c2e;
+            border: 1px solid #3a3a3c;
+            border-radius: 6px;
+            color: #ffffff;
+            padding: 5px;
+            font-size: 11px;
+            outline: none;
+            text-align: center;
+        }
+
+        .extra-add-btn {
+            background-color: #30d158;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .extra-add-btn:active { opacity: 0.7; }
+
+        .delete-btn {
+            background-color: #ff453a;
+            color: white;
+            border: none;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+        }
 
         .phone-footer {
             height: 20px;
@@ -354,7 +405,7 @@
         <!-- 12 AY GRID -->
         <div class="months-grid" id="monthsGrid"></div>
 
-        <!-- AY DETAY SAYFASI (GİDER GİRİŞ ALANI) -->
+        <!-- AY DETAY SAYFASI (9 SABİT + EKSTRA GİDERLER) -->
         <div class="month-detail-screen" id="monthDetailScreen">
             <div class="detail-header">
                 <button class="back-btn" onclick="aylaraDon()">‹ Aylara Dön</button>
@@ -365,13 +416,32 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 45%;">Kalem</th>
+                            <th style="width: 42%;">Kalem</th>
                             <th style="width: 25%;">Tür</th>
-                            <th style="width: 30%;">Tutar (₺)</th>
+                            <th style="width: 33%;">Tutar (₺)</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
+            </div>
+
+            <!-- EKSTRA KALEM EKLEME FORMU -->
+            <div class="extra-form-box">
+                <div style="font-size: 11px; font-weight:600; color:#0a84ff; text-align:center;">+ Bu Aya Ekstra Harcama Ekle</div>
+                <div class="extra-form-row">
+                    <input type="text" id="exSimge" placeholder="Emoji (Örn: 🛒)" style="width: 22%;">
+                    <input type="text" id="exAd" placeholder="Harcama Adı" style="width: 38%;">
+                    <select id="exHedef" style="width: 40%;">
+                        <option value="5">📱 Cep Tel (Ekle)</option>
+                        <option value="7">📌 Diğer (Ekle)</option>
+                        <option value="1">💳 K.Kartı (Ekle)</option>
+                        <option value="7">🛒 Market / Diğer</option>
+                    </select>
+                </div>
+                <div class="extra-form-row">
+                    <input type="number" id="exTutar" placeholder="Tutar (₺)" style="flex: 1;" step="any">
+                    <button class="extra-add-btn" onclick="ekstraKalemEkle()">Ekle</button>
+                </div>
             </div>
         </div>
 
@@ -388,7 +458,7 @@
             "Eylül", "Ekim", "Kasım", "Aralık"
         ];
 
-        // 9 Sabit Kalem ve Simgeleri
+        // 9 Sabit Kalem
         const sabitKalemler = [
             { ad: "Kredi", simge: "🏦", tur: "gider" },
             { ad: "K.Kartı", simge: "💳", tur: "gider" },
@@ -423,12 +493,12 @@
         }
 
         function tumVerileriAl() {
-            var veriler = localStorage.getItem("gelirGiderSabitData_v2");
+            var veriler = localStorage.getItem("gelirGiderSabitData_v3");
             return veriler ? JSON.parse(veriler) : {};
         }
 
         function tumVerileriKaydet(data) {
-            localStorage.setItem("gelirGiderSabitData_v2", JSON.stringify(data));
+            localStorage.setItem("gelirGiderSabitData_v3", JSON.stringify(data));
         }
 
         function aylariOlustur() {
@@ -440,13 +510,24 @@
             const tumVeriler = tumVerileriAl();
 
             aylar.forEach((ay, index) => {
-                const ayVerisi = tumVeriler[index] || {};
+                const ayVerisi = tumVeriler[index] || { sabit: {}, ekstra: [] };
                 let toplamGelir = 0;
                 let toplamGider = 0;
 
+                // Her sabit kalemin toplamını hesapla (sabit + o kaleme ait ekstralar)
                 let previewHTML = "";
                 sabitKalemler.forEach((kalem, kIndex) => {
-                    let tutar = parseFloat(ayVerisi[kIndex]) || 0;
+                    let tutar = parseFloat(ayVerisi.sabit[kIndex]) || 0;
+
+                    // Bu sabit kaleme bağlı ekstraları topla
+                    if (ayVerisi.ekstra) {
+                        ayVerisi.ekstra.forEach(ex => {
+                            if (parseInt(ex.hedef) === kIndex) {
+                                tutar += parseFloat(ex.tutar) || 0;
+                            }
+                        });
+                    }
+
                     if (kalem.tur === "gelir") toplamGelir += tutar;
                     else toplamGider += tutar;
 
@@ -504,15 +585,15 @@
             tbody.innerHTML = "";
 
             const tumVeriler = tumVerileriAl();
-            const ayVerisi = tumVeriler[aktifAyIndex] || {};
+            const ayVerisi = tumVeriler[aktifAyIndex] || { sabit: {}, ekstra: [] };
 
+            // 1. Önce 9 Sabit Kalemi Listele
             sabitKalemler.forEach((kalem, kIndex) => {
                 const row = tbody.insertRow();
-                
                 const isGelir = kalem.tur === "gelir";
                 const turClass = isGelir ? "txt-gelir" : "txt-gider";
                 const turEtiket = isGelir ? "Gelir (+)" : "Gider (-)";
-                const mevcutTutar = ayVerisi[kIndex] !== undefined ? ayVerisi[kIndex] : "";
+                const mevcutTutar = ayVerisi.sabit[kIndex] !== undefined ? ayVerisi.sabit[kIndex] : "";
 
                 row.insertCell(0).innerHTML = `${kalem.simge} ${kalem.ad}`;
                 
@@ -521,23 +602,91 @@
                 cellTur.className = turClass;
 
                 const cellTutar = row.insertCell(2);
-                cellTutar.innerHTML = `<input type="number" class="item-input" placeholder="0" value="${mevcutTutar}" oninput="tutarGuncelle(${kIndex}, this.value)" step="any">`;
+                cellTutar.innerHTML = `<input type="number" class="item-input" placeholder="0" value="${mevcutTutar}" oninput="sabitTutarGuncelle(${kIndex}, this.value)" step="any">`;
             });
+
+            // 2. Sonra Ekstra Eklenen Kalemleri Listele
+            if (ayVerisi.ekstra && ayVerisi.ekstra.length > 0) {
+                ayVerisi.ekstra.forEach((ex, eIndex) => {
+                    const row = tbody.insertRow();
+                    row.insertCell(0).innerHTML = `${ex.simge || '📌'} ${ex.ad}`;
+                    
+                    const cellTur = row.insertCell(1);
+                    cellTur.innerText = "Gider (-)";
+                    cellTur.className = "txt-gider";
+
+                    const cellTutar = row.insertCell(2);
+                    cellTutar.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:4px;">
+                            <span style="font-size:11px;">${parseFloat(ex.tutar).toLocaleString('tr-TR')}₺</span>
+                            <button class="delete-btn" onclick="ekstraKalemSil(${eIndex})">Sil</button>
+                        </div>
+                    `;
+                });
+            }
         }
 
-        function tutarGuncelle(kIndex, deger) {
+        function sabitTutarGuncelle(kIndex, deger) {
             const tumVeriler = tumVerileriAl();
             if (!tumVeriler[aktifAyIndex]) {
-                tumVeriler[aktifAyIndex] = {};
+                tumVeriler[aktifAyIndex] = { sabit: {}, ekstra: [] };
+            }
+            if (!tumVeriler[aktifAyIndex].sabit) {
+                tumVeriler[aktifAyIndex].sabit = {};
             }
 
             if (deger === "" || parseFloat(deger) < 0) {
-                delete tumVeriler[aktifAyIndex][kIndex];
+                delete tumVeriler[aktifAyIndex].sabit[kIndex];
             } else {
-                tumVeriler[aktifAyIndex][kIndex] = parseFloat(deger);
+                tumVeriler[aktifAyIndex].sabit[kIndex] = parseFloat(deger);
             }
 
             tumVerileriKaydet(tumVeriler);
+        }
+
+        function ekstraKalemEkle() {
+            const simge = document.getElementById("exSimge").value.trim() || "📌";
+            const ad = document.getElementById("exAd").value.trim();
+            const hedef = document.getElementById("exHedef").value;
+            const tutar = document.getElementById("exTutar").value;
+
+            if (!ad || !tutar || tutar <= 0) {
+                alert("Lütfen harcama adı ve geçerli bir tutar girin!");
+                return;
+            }
+
+            const tumVeriler = tumVerileriAl();
+            if (!tumVeriler[aktifAyIndex]) {
+                tumVeriler[aktifAyIndex] = { sabit: {}, ekstra: [] };
+            }
+            if (!tumVeriler[aktifAyIndex].ekstra) {
+                tumVeriler[aktifAyIndex].ekstra = [];
+            }
+
+            tumVeriler[aktifAyIndex].ekstra.push({
+                simge: simge,
+                ad: ad,
+                hedef: parseInt(hedef),
+                tutar: parseFloat(tutar)
+            });
+
+            tumVerileriKaydet(tumVeriler);
+
+            // Formu temizle
+            document.getElementById("exSimge").value = "";
+            document.getElementById("exAd").value = "";
+            document.getElementById("exTutar").value = "";
+
+            tabloGuncelle();
+        }
+
+        function ekstraKalemSil(eIndex) {
+            const tumVeriler = tumVerileriAl();
+            if (tumVeriler[aktifAyIndex] && tumVeriler[aktifAyIndex].ekstra) {
+                tumVeriler[aktifAyIndex].ekstra.splice(eIndex, 1);
+                tumVerileriKaydet(tumVeriler);
+                tabloGuncelle();
+            }
         }
     </script>
 </body>
