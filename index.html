@@ -48,6 +48,8 @@
             background-color: #000000;
             gap: 20px;
             padding: 20px;
+            width: 100%;
+            height: 100%;
         }
 
         .img-wrapper img {
@@ -110,6 +112,7 @@
             overflow: hidden;
             background-color: #000000;
             width: 100%;
+            height: 100%;
         }
 
         .small-logo-wrapper {
@@ -130,12 +133,12 @@
         .months-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            grid-template-rows: repeat(4, 1fr);
+            gap: 6px;
             flex: 1;
             width: 100%;
-            overflow-y: auto;
-            padding-bottom: 6px;
-            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+            overflow: hidden;
         }
 
         .month-card {
@@ -144,12 +147,13 @@
             border-radius: 10px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: space-evenly;
             align-items: center;
-            padding: 10px 6px;
+            padding: 4px 2px;
             cursor: pointer;
-            aspect-ratio: 1 / 1.05;
             transition: background-color 0.2s, transform 0.1s;
+            width: 100%;
+            height: 100%;
         }
 
         .month-card:active {
@@ -159,27 +163,27 @@
 
         .month-name {
             font-weight: 700;
-            font-size: 13px;
+            font-size: 12px;
             color: #0a84ff;
         }
 
         .month-summary {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 1px;
             width: 100%;
             text-align: center;
         }
 
-        .sum-gelir { font-size: 10px; color: #30d158; }
-        .sum-gider { font-size: 10px; color: #ff453a; }
+        .sum-gelir { font-size: 9px; color: #30d158; }
+        .sum-gider { font-size: 9px; color: #ff453a; }
         .sum-bakiye { 
-            font-size: 11px; 
+            font-size: 10px; 
             font-weight: 600; 
             color: #ffffff; 
             border-top: 1px solid #3a3a3c; 
-            padding-top: 2px; 
-            margin-top: 2px; 
+            padding-top: 1px; 
+            margin-top: 1px; 
         }
 
         /* 3. AY DETAY SAYFASI */
@@ -189,6 +193,8 @@
             flex-direction: column;
             gap: 8px;
             overflow: hidden;
+            width: 100%;
+            height: 100%;
         }
 
         .detail-header {
@@ -316,6 +322,7 @@
             font-size: 10px;
             color: #8e8e93;
             background-color: #000000;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -450,84 +457,4 @@
             });
         }
 
-        function ayDetayAc(index) {
-            aktifAyIndex = index;
-            document.getElementById("monthsGrid").style.display = "none";
-            document.getElementById("monthDetailScreen").style.display = "flex";
-            document.getElementById("selectedMonthTitle").innerText = aylar[index] + " Ayı";
-            tabloGuncelle();
-        }
-
-        function aylaraDon() {
-            aktifAyIndex = null;
-            aylariOlustur();
-        }
-
-        function tabloGuncelle() {
-            const tbody = document.getElementById("tableBody");
-            tbody.innerHTML = "";
-
-            const tumVeriler = tumVerileriAl();
-            const ayVerisi = tumVeriler[aktifAyIndex] || [];
-
-            ayVerisi.forEach((item, itemIndex) => {
-                const row = tbody.insertRow();
-                
-                const isGelir = item.tur === "gelir";
-                const turClass = isGelir ? "txt-gelir" : "txt-gider";
-                const turEtiket = isGelir ? "Gelir" : "Gider";
-
-                row.insertCell(0).innerText = item.aciklama;
-                
-                const cellTur = row.insertCell(1);
-                cellTur.innerText = turEtiket;
-                cellTur.className = turClass;
-
-                const cellTutar = row.insertCell(2);
-                cellTutar.innerText = parseFloat(item.tutar).toLocaleString('tr-TR') + " ₺";
-                cellTutar.className = turClass;
-
-                row.insertCell(3).innerHTML = `<button class="delete-btn" onclick="islemiSil(${itemIndex})">Sil</button>`;
-            });
-        }
-
-        function islemiEkle() {
-            const aciklama = document.getElementById("inputAçıklama").value.trim();
-            const tutar = document.getElementById("inputTutar").value;
-            const tur = document.getElementById("selectTur").value;
-
-            if (!aciklama || !tutar || tutar <= 0) {
-                alert("Lütfen geçerli bir açıklama ve tutar girin!");
-                return;
-            }
-
-            const tumVeriler = tumVerileriAl();
-            if (!tumVeriler[aktifAyIndex]) {
-                tumVeriler[aktifAyIndex] = [];
-            }
-
-            tumVeriler[aktifAyIndex].push({
-                aciklama: aciklama,
-                tutar: parseFloat(tutar),
-                tur: tur
-            });
-
-            tumVerileriKaydet(tumVeriler);
-
-            document.getElementById("inputAçıklama").value = "";
-            document.getElementById("inputTutar").value = "";
-
-            tabloGuncelle();
-        }
-
-        function islemiSil(itemIndex) {
-            const tumVeriler = tumVerileriAl();
-            if (tumVeriler[aktifAyIndex]) {
-                tumVeriler[aktifAyIndex].splice(itemIndex, 1);
-                tumVerileriKaydet(tumVeriler);
-                tabloGuncelle();
-            }
-        }
-    </script>
-</body>
-</html>
+        function ayDetayAc(index
