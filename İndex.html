@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- iOS Ana Ekran Ayarları ve Uygulama Simgesi -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Gelir Gider">
+    
+    <!-- Ana Ekran Simgesi (Logo) -->
+    <link rel="apple-touch-icon" href="https://i.ibb.co/fdZt2zYf/MG-2683.jpg">
+    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/fdZt2zYf/MG-2683.jpg">
+    
+    <title>Gelir Gider Takibi</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            color: #ffffff;
+        }
+
+        /* 1. GİRİŞ EKRANI */
+        .login-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #000000;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .img-wrapper img {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+        }
+
+        .login-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .login-box input[type="password"],
+        .login-box input[type="tel"] {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            border: 1px solid #2c2c2e;
+            border-radius: 12px;
+            outline: none;
+            text-align: center;
+            background-color: #1c1c1e;
+            color: #ffffff;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            background-color: #0a84ff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .login-box button:active {
+            opacity: 0.7;
+        }
+
+        .error-msg {
+            color: #ff453a;
+            font-size: 14px;
+            font-weight: 500;
+            height: 18px;
+        }
+
+        /* 2. ANA UYGULAMA EKRANI */
+        .app-screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            padding: 10px 12px 0 12px;
+            gap: 10px;
+            overflow: hidden;
+            background-color: #000000;
+        }
+
+        .small-logo-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .small-logo-wrapper img {
+            width: 55px;
+            height: 55px;
+            object-fit: contain;
+        }
+
+        /* 12 AY - 3'LÜ GRID KARELERİ */
+        .months-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            overflow-y: auto;
+            padding-bottom: 10px;
+            flex: 1;
+        }
+
+        .month-card {
+            background-color: #1c1c1e;
+            border: 1px solid #2c2c2e;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 6px;
+            cursor: pointer;
+            aspect-ratio: 1 / 1;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .month-card:active {
+            background-color: #2c2c2e;
+            transform: scale(0.97);
+        }
+
+        .month-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: #0a84ff;
+        }
+
+        .month-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .sum-gelir { font-size: 10px; color: #30d158; }
+        .sum-gider { font-size: 10px; color: #ff453a; }
+        .sum-bakiye { font-size: 11px; font-weight: 600; color: #ffffff; border-top: 1px solid #3a3a3c; padding-top: 2px; margin-top: 2px; }
+
+        /* 3. AY DETAY SAYFASI */
+        .month-detail-screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            gap: 10px;
+            overflow: hidden;
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1c1c1e;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid #2c2c2e;
+        }
+
+        .detail-header h2 {
+            font-size: 16px;
+            color: #ffffff;
+        }
+
+        .back-btn {
+            background-color: #0a84ff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .ios-card-form {
+            background: #1c1c1e;
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border: 1px solid #2c2c2e;
+        }
+
+        .ios-card-form input, .ios-card-form select {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #3a3a3c;
+            border-radius: 8px;
+            background-color: #2c2c2e;
+            color: #ffffff;
+            outline: none;
+            text-align: center;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .form-row input, .form-row select {
+            flex: 1;
+        }
+
+        .add-btn {
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background-color: #30d158;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .add-btn:active { opacity: 0.7; }
+
+        .ios-table-container {
+            flex: 1;
+            overflow-y: auto;
+            background: #1c1c1e;
+            border-radius: 12px;
+            border: 1px solid #48484a;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid #48484a;
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 11px;
+            color: #ffffff;
+            word-break: break-all;
+        }
+
+        th {
+            background-color: #2c2c2e;
+            color: #8e8e93;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .txt-gelir { color: #30d158; font-weight: 600; }
+        .txt-gider { color: #ff453a; font-weight: 600; }
+
+        .delete-btn {
+            background-color: #ff453a;
+            color: white;
+            border: none;
+            padding: 4px 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .phone-footer {
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 12px;
+            font-size: 11px;
+            color: #8e8e93;
+            background-color: #000000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- GİRİŞ EKRANI -->
+    <div class="login-screen" id="loginScreen">
+        <div class="img-wrapper">
+            <img src="https://i.ibb.co/fdZt2zYf/MG-2683.jpg" alt="Logo">
+        </div>
+
+        <div class="login-box">
+            <input type="password" id="passInput" placeholder="Şifrenizi Girin" autofocus>
+            <button onclick="sifreKontrol()">Giriş Yap</button>
+            <div class="error-msg" id="errorText"></div>
+        </div>
+    </div>
+
+    <!-- ANA EKRAN (AYLAR GRID) -->
+    <div class="app-screen" id="appScreen">
+        
+        <div class="small-logo-wrapper">
+            <img src="https://i.ibb.co/fdZt2zYf/MG-2683.jpg" alt="EB Logo">
+        </div>
+
+        <!-- 12 YANYANA 3'LÜ KARE AYLAR -->
+        <div class="months-grid" id="monthsGrid"></div>
+
+        <!-- AY DETAY SAYFASI (GELİR/GİDER EKLEME) -->
+        <div class="month-detail-screen" id="monthDetailScreen">
+            <div class="detail-header">
+                <button class="back-btn" onclick="aylaraDon()">‹ Aylara Dön</button>
+                <h2 id="selectedMonthTitle">Ocak</h2>
+            </div>
+
+            <div class="ios-card-form">
+                <input type="text" id="inputAçıklama" placeholder="Açıklama (Örn: Maaş, Kira)">
+                <div class="form-row">
+                    <input type="number" id="inputTutar" placeholder="Tutar (₺)" step="any">
+                    <select id="selectTur">
+                        <option value="gelir">Gelir (+)</option>
+                        <option value="gider">Gider (-)</option>
+                    </select>
+                </div>
+                <button class="add-btn" onclick="islemiEkle()">Kaydet</button>
+            </div>
+
+            <div class="ios-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 45%;">Açıklama</th>
+                            <th style="width: 25%;">Tür</th>
+                            <th style="width: 20%;">Tutar</th>
+                            <th style="width: 10%;">Sil</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="phone-footer">
+        <span>ErsNByhN® 2026</span>
+    </div>
+
+    <script>
+        const aylar = [
+            "Ocak", "Şubat", "Mart", "Nisan", 
+            "Mayıs", "Haziran", "Temmuz", "Ağustos", 
+            "Eylül", "Ekim", "Kasım", "Aralık"
+        ];
+
+        let aktifAyIndex = null;
+
+        function sifreKontrol() {
+            var girilenSifre = document.getElementById("passInput").value;
+            if (girilenSifre === "8290028") {
+                document.getElementById("loginScreen").style.display = "none";
+                document.getElementById("appScreen").style.display = "flex";
+                aylariOlustur();
+            } else {
+                document.getElementById("errorText").innerText = "Hatalı şifre!";
+                document.getElementById("passInput").value = "";
+            }
+        }
+
+        function tumVerileriAl() {
+            var veriler = localStorage.getItem("gelirGiderData");
+            return veriler ? JSON.parse(veriler) : {};
+        }
+
+        function tumVerileriKaydet(data) {
+            localStorage.setItem("gelirGiderData", JSON.stringify(data));
+        }
+
+        function aylariOlustur() {
+            const grid = document.getElementById("monthsGrid");
+            grid.style.display = "grid";
+            document.getElementById("monthDetailScreen").style.display = "none";
+            grid.innerHTML = "";
+
+            const tumVeriler = tumVerileriAl();
+
+            aylar.forEach((ay, index) => {
+                const ayVerisi = tumVeriler[index] || [];
+                let toplamGelir = 0;
+                let toplamGider = 0;
+
+                ayVerisi.forEach(item => {
+                    if (item.tur === "gelir") toplamGelir += parseFloat(item.tutar);
+                    else toplamGider += parseFloat(item.tutar);
+                });
+
+                let bakiye = toplamGelir - toplamGider;
+
+                const card = document.createElement("div");
+                card.className = "month-card";
+                card.onclick = () => ayDetayAc(index);
+
+                card.innerHTML = `
+                    <div class="month-name">${ay}</div>
+                    <div class="month-summary">
+                        <span class="sum-gelir">+${toplamGelir.toLocaleString('tr-TR')} ₺</span>
+                        <span class="sum-gider">-${toplamGider.toLocaleString('tr-TR')} ₺</span>
+                        <span class="sum-bakiye">${bakiye.toLocaleString('tr-TR')} ₺</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function ayDetayAc(index) {
+            aktifAyIndex = index;
+            document.getElementById("monthsGrid").style.display = "none";
+            document.getElementById("monthDetailScreen").style.display = "flex";
+            document.getElementById("selectedMonthTitle").innerText = aylar[index] + " Ayı";
+            tabloGuncelle();
+        }
+
+        function aylaraDon() {
+            aktifAyIndex = null;
+            aylariOlustur();
+        }
+
+        function tabloGuncelle() {
+            const tbody = document.getElementById("tableBody");
+            tbody.innerHTML = "";
+
+            const tumVeriler = tumVerileriAl();
+            const ayVerisi = tumVeriler[aktifAyIndex] || [];
+
+            ayVerisi.forEach((item, itemIndex) => {
+                const row = tbody.insertRow();
+                
+                const isGelir = item.tur === "gelir";
+                const turClass = isGelir ? "txt-gelir" : "txt-gider";
+                const turEtiket = isGelir ? "Gelir" : "Gider";
+
+                row.insertCell(0).innerText = item.aciklama;
+                
+                const cellTur = row.insertCell(1);
+                cellTur.innerText = turEtiket;
+                cellTur.className = turClass;
+
+                const cellTutar = row.insertCell(2);
+                cellTutar.innerText = parseFloat(item.tutar).toLocaleString('tr-TR') + " ₺";
+                cellTutar.className = turClass;
+
+                row.insertCell(3).innerHTML = `<button class="delete-btn" onclick="islemiSil(${itemIndex})">Sil</button>`;
+            });
+        }
+
+        function islemiEkle() {
+            const aciklama = document.getElementById("inputAçıklama").value.trim();
+            const tutar = document.getElementById("inputTutar").value;
+            const tur = document.getElementById("selectTur").value;
+
+            if (!aciklama || !tutar || tutar <= 0) {
+                alert("Lütfen geçerli bir açıklama ve tutar girin!");
+                return;
+            }
+
+            const tumVeriler = tumVerileriAl();
+            if (!tumVeriler[aktifAyIndex]) {
+                tumVeriler[aktifAyIndex] = [];
+            }
+
+            tumVeriler[aktifAyIndex].push({
+                aciklama: aciklama,
+                tutar: parseFloat(tutar),
+                tur: tur
+            });
+
+            tumVerileriKaydet(tumVeriler);
+
+            document.getElementById("inputAçıklama").value = "";
+            document.getElementById("inputTutar").value = "";
+
+            tabloGuncelle();
+        }
+
+        function islemiSil(itemIndex) {
+            const tumVeriler = tumVerileriAl();
+            if (tumVeriler[aktifAyIndex]) {
+                tumVeriler[aktifAyIndex].splice(itemIndex, 1);
+                tumVerileriKaydet(tumVeriler);
+                tabloGuncelle();
+            }
+        }
+    </script>
+</body>
+</html>
