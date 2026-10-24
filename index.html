@@ -405,7 +405,7 @@
         <!-- 12 AY GRID -->
         <div class="months-grid" id="monthsGrid"></div>
 
-        <!-- AY DETAY SAYFASI (9 SABİT + EKSTRA GİDERLER) -->
+        <!-- AY DETAY SAYFASI (9 SABİT + EKSTRA GELİR/GİDER) -->
         <div class="month-detail-screen" id="monthDetailScreen">
             <div class="detail-header">
                 <button class="back-btn" onclick="aylaraDon()">‹ Aylara Dön</button>
@@ -425,21 +425,26 @@
                 </table>
             </div>
 
-            <!-- EKSTRA KALEM EKLEME FORMU -->
+            <!-- EKSTRA KALEM (GELİR / GİDER) EKLEME FORMU -->
             <div class="extra-form-box">
-                <div style="font-size: 11px; font-weight:600; color:#0a84ff; text-align:center;">+ Bu Aya Ekstra Harcama Ekle</div>
+                <div style="font-size: 11px; font-weight:600; color:#0a84ff; text-align:center;">+ Ekstra Gelir / Harcama Ekle</div>
                 <div class="extra-form-row">
-                    <input type="text" id="exSimge" placeholder="Emoji (Örn: 🛒)" style="width: 22%;">
-                    <input type="text" id="exAd" placeholder="Harcama Adı" style="width: 38%;">
-                    <select id="exHedef" style="width: 40%;">
-                        <option value="5">📱 Cep Tel (Ekle)</option>
-                        <option value="7">📌 Diğer (Ekle)</option>
-                        <option value="1">💳 K.Kartı (Ekle)</option>
-                        <option value="7">🛒 Market / Diğer</option>
+                    <input type="text" id="exSimge" placeholder="Emoji (Örn: 💰)" style="width: 20%;">
+                    <input type="text" id="exAd" placeholder="Açıklama (Örn: Prim)" style="width: 40%;">
+                    <select id="exTur" style="width: 40%;">
+                        <option value="gider">Gider (-)</option>
+                        <option value="gelir">Gelir (+)</option>
                     </select>
                 </div>
                 <div class="extra-form-row">
-                    <input type="number" id="exTutar" placeholder="Tutar (₺)" style="flex: 1;" step="any">
+                    <select id="exHedef" style="flex: 1;">
+                        <option value="8">💵 Maaş / Ek Gelir (Ekle)</option>
+                        <option value="5">📱 Cep Tel (Ekle)</option>
+                        <option value="1">💳 K.Kartı (Ekle)</option>
+                        <option value="7">📌 Diğer (Ekle)</option>
+                        <option value="0">🏦 Kredi (Ekle)</option>
+                    </select>
+                    <input type="number" id="exTutar" placeholder="Tutar (₺)" style="width: 35%;" step="any">
                     <button class="extra-add-btn" onclick="ekstraKalemEkle()">Ekle</button>
                 </div>
             </div>
@@ -493,12 +498,12 @@
         }
 
         function tumVerileriAl() {
-            var veriler = localStorage.getItem("gelirGiderSabitData_v3");
+            var veriler = localStorage.getItem("gelirGiderSabitData_v4");
             return veriler ? JSON.parse(veriler) : {};
         }
 
         function tumVerileriKaydet(data) {
-            localStorage.setItem("gelirGiderSabitData_v3", JSON.stringify(data));
+            localStorage.setItem("gelirGiderSabitData_v4", JSON.stringify(data));
         }
 
         function aylariOlustur() {
@@ -605,20 +610,24 @@
                 cellTutar.innerHTML = `<input type="number" class="item-input" placeholder="0" value="${mevcutTutar}" oninput="sabitTutarGuncelle(${kIndex}, this.value)" step="any">`;
             });
 
-            // 2. Sonra Ekstra Eklenen Kalemleri Listele
+            // 2. Sonra Ekstra Eklenen Kalemleri (Gelir / Gider) Listele
             if (ayVerisi.ekstra && ayVerisi.ekstra.length > 0) {
                 ayVerisi.ekstra.forEach((ex, eIndex) => {
                     const row = tbody.insertRow();
-                    row.insertCell(0).innerHTML = `${ex.simge || '📌'} ${ex.ad}`;
+                    const isGelir = ex.tur === "gelir";
+                    const turClass = isGelir ? "txt-gelir" : "txt-gider";
+                    const turEtiket = isGelir ? "Gelir (+)" : "Gider (-)";
+
+                    row.insertCell(0).innerHTML = `${ex.simge || (isGelir ? '💰' : '📌')} ${ex.ad}`;
                     
                     const cellTur = row.insertCell(1);
-                    cellTur.innerText = "Gider (-)";
-                    cellTur.className = "txt-gider";
+                    cellTur.innerText = turEtiket;
+                    cellTur.className = turClass;
 
                     const cellTutar = row.insertCell(2);
                     cellTutar.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:4px;">
-                            <span style="font-size:11px;">${parseFloat(ex.tutar).toLocaleString('tr-TR')}₺</span>
+                        <div style="display:flex; align-items:center; justify-content:center; gap:4px;">
+                            <span class="${turClass}" style="font-size:11px;">${parseFloat(ex.tutar).toLocaleString('tr-TR')}₺</span>
                             <button class="delete-btn" onclick="ekstraKalemSil(${eIndex})">Sil</button>
                         </div>
                     `;
@@ -645,13 +654,14 @@
         }
 
         function ekstraKalemEkle() {
-            const simge = document.getElementById("exSimge").value.trim() || "📌";
+            const tur = document.getElementById("exTur").value;
+            const simge = document.getElementById("exSimge").value.trim() || (tur === "gelir" ? "💰" : "📌");
             const ad = document.getElementById("exAd").value.trim();
             const hedef = document.getElementById("exHedef").value;
             const tutar = document.getElementById("exTutar").value;
 
             if (!ad || !tutar || tutar <= 0) {
-                alert("Lütfen harcama adı ve geçerli bir tutar girin!");
+                alert("Lütfen açıklama ve geçerli bir tutar girin!");
                 return;
             }
 
@@ -664,6 +674,7 @@
             }
 
             tumVeriler[aktifAyIndex].ekstra.push({
+                tur: tur,
                 simge: simge,
                 ad: ad,
                 hedef: parseInt(hedef),
