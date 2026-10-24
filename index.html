@@ -77,6 +77,8 @@
             text-align: center;
             background-color: #1c1c1e;
             color: #ffffff;
+            user-select: text;
+            -webkit-user-select: text;
         }
 
         .login-box button {
@@ -108,8 +110,8 @@
             display: none;
             flex: 1;
             flex-direction: column;
-            padding: 4px 10px 0 10px;
-            gap: 6px;
+            padding: 4px 6px 0 6px;
+            gap: 4px;
             overflow: hidden;
             background-color: #000000;
             width: 100%;
@@ -125,20 +127,20 @@
         }
 
         .small-logo-wrapper img {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             object-fit: contain;
         }
 
-        /* 12 AY - 3'LÜ KUSURSUZ GRID */
+        /* 12 AY - 3'LÜ GRID YAPI */
         .months-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-template-rows: repeat(4, 1fr);
-            gap: 6px;
+            gap: 5px;
             flex: 1;
             width: 100%;
-            padding-bottom: 4px;
+            padding-bottom: 2px;
             overflow: hidden;
         }
 
@@ -148,13 +150,14 @@
             border-radius: 10px;
             display: flex;
             flex-direction: column;
-            justify-content: space-evenly;
+            justify-content: space-between;
             align-items: center;
-            padding: 4px 2px;
+            padding: 5px 4px;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
             width: 100%;
             height: 100%;
+            overflow: hidden;
         }
 
         .month-card:active {
@@ -164,28 +167,56 @@
 
         .month-name {
             font-weight: 700;
-            font-size: 12px;
+            font-size: 11px;
             color: #0a84ff;
+            text-align: center;
+            margin-bottom: 1px;
         }
 
-        .month-summary {
+        /* Kart İçindeki 9 Kalemin Önizleme Listesi */
+        .month-items-preview {
             display: flex;
             flex-direction: column;
             gap: 1px;
             width: 100%;
-            text-align: center;
+            flex: 1;
+            justify-content: space-evenly;
         }
 
-        .sum-gelir { font-size: 9px; color: #30d158; }
-        .sum-gider { font-size: 9px; color: #ff453a; }
-        .sum-bakiye { 
-            font-size: 10px; 
-            font-weight: 600; 
-            color: #ffffff; 
-            border-top: 1px solid #3a3a3c; 
-            padding-top: 1px; 
-            margin-top: 1px; 
+        .preview-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 8px;
+            color: #d1d1d6;
+            width: 100%;
+            padding: 0 1px;
         }
+
+        .preview-label {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .preview-val-gelir { color: #30d158; font-weight: 600; }
+        .preview-val-gider { color: #ff453a; font-weight: 600; }
+
+        .month-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            border-top: 1px solid #3a3a3c;
+            padding-top: 2px;
+            font-size: 9px;
+            font-weight: 600;
+        }
+
+        .sum-bakiye-lbl { color: #8e8e93; font-size: 8px; }
+        .sum-bakiye-val { color: #ffffff; font-size: 9px; }
 
         /* 3. AY DETAY SAYFASI */
         .month-detail-screen {
@@ -268,17 +299,19 @@
             padding: 5px;
             font-size: 12px;
             outline: none;
+            user-select: text;
+            -webkit-user-select: text;
         }
 
         .txt-gelir { color: #30d158; font-weight: 600; }
         .txt-gider { color: #ff453a; font-weight: 600; }
 
         .phone-footer {
-            height: 22px;
+            height: 20px;
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            padding: 0 10px;
+            padding: 0 8px;
             font-size: 10px;
             color: #8e8e93;
             background-color: #000000;
@@ -311,7 +344,7 @@
         <!-- 12 AY GRID -->
         <div class="months-grid" id="monthsGrid"></div>
 
-        <!-- AY DETAY SAYFASI (9 SABİT KALEM) -->
+        <!-- AY DETAY SAYFASI (GİDER GİRİŞ ALANI) -->
         <div class="month-detail-screen" id="monthDetailScreen">
             <div class="detail-header">
                 <button class="back-btn" onclick="aylaraDon()">‹ Aylara Dön</button>
@@ -348,11 +381,11 @@
         // 9 Sabit Kalem ve Simgeleri
         const sabitKalemler = [
             { ad: "Kredi", simge: "🏦", tur: "gider" },
-            { ad: "Kredi Kartı", simge: "💳", tur: "gider" },
+            { ad: "K.Kartı", simge: "💳", tur: "gider" },
             { ad: "Elektrik", simge: "⚡", tur: "gider" },
             { ad: "Su", simge: "💧", tur: "gider" },
             { ad: "Doğalgaz", simge: "🔥", tur: "gider" },
-            { ad: "Cep Telefonu", simge: "📱", tur: "gider" },
+            { ad: "Cep Tel", simge: "📱", tur: "gider" },
             { ad: "İnternet", simge: "🌐", tur: "gider" },
             { ad: "Diğer", simge: "📌", tur: "gider" },
             { ad: "Maaş", simge: "💵", tur: "gelir" }
@@ -401,10 +434,21 @@
                 let toplamGelir = 0;
                 let toplamGider = 0;
 
+                let previewHTML = "";
                 sabitKalemler.forEach((kalem, kIndex) => {
                     let tutar = parseFloat(ayVerisi[kIndex]) || 0;
                     if (kalem.tur === "gelir") toplamGelir += tutar;
                     else toplamGider += tutar;
+
+                    let valClass = kalem.tur === "gelir" ? "preview-val-gelir" : "preview-val-gider";
+                    let formatTutar = tutar > 0 ? tutar.toLocaleString('tr-TR') + "₺" : "-";
+                    
+                    previewHTML += `
+                        <div class="preview-row">
+                            <span class="preview-label"><span>${kalem.simge}</span>${kalem.ad}</span>
+                            <span class="${valClass}">${formatTutar}</span>
+                        </div>
+                    `;
                 });
 
                 let bakiye = toplamGelir - toplamGider;
@@ -415,10 +459,12 @@
 
                 card.innerHTML = `
                     <div class="month-name">${ay}</div>
+                    <div class="month-items-preview">
+                        ${previewHTML}
+                    </div>
                     <div class="month-summary">
-                        <span class="sum-gelir">+${toplamGelir.toLocaleString('tr-TR')} ₺</span>
-                        <span class="sum-gider">-${toplamGider.toLocaleString('tr-TR')} ₺</span>
-                        <span class="sum-bakiye">${bakiye.toLocaleString('tr-TR')} ₺</span>
+                        <span class="sum-bakiye-lbl">Kalan:</span>
+                        <span class="sum-bakiye-val">${bakiye.toLocaleString('tr-TR')}₺</span>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -449,35 +495,4 @@
                 const row = tbody.insertRow();
                 
                 const isGelir = kalem.tur === "gelir";
-                const turClass = isGelir ? "txt-gelir" : "txt-gider";
-                const turEtiket = isGelir ? "Gelir (+)" : "Gider (-)";
-                const mevcutTutar = ayVerisi[kIndex] !== undefined ? ayVerisi[kIndex] : "";
-
-                row.insertCell(0).innerHTML = `${kalem.simge} ${kalem.ad}`;
-                
-                const cellTur = row.insertCell(1);
-                cellTur.innerText = turEtiket;
-                cellTur.className = turClass;
-
-                const cellTutar = row.insertCell(2);
-                cellTutar.innerHTML = `<input type="number" class="item-input" placeholder="0" value="${mevcutTutar}" oninput="tutarGuncelle(${kIndex}, this.value)" step="any">`;
-            });
-        }
-
-        function tutarGuncelle(kIndex, deger) {
-            const tumVeriler = tumVerileriAl();
-            if (!tumVeriler[aktifAyIndex]) {
-                tumVeriler[aktifAyIndex] = {};
-            }
-
-            if (deger === "" || parseFloat(deger) < 0) {
-                delete tumVeriler[aktifAyIndex][kIndex];
-            } else {
-                tumVeriler[aktifAyIndex][kIndex] = parseFloat(deger);
-            }
-
-            tumVerileriKaydet(tumVeriler);
-        }
-    </script>
-</body>
-</html>
+                const turClass =
