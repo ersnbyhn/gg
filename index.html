@@ -110,8 +110,8 @@
             display: none;
             flex: 1;
             flex-direction: column;
-            padding: 4px 6px 0 6px;
-            gap: 4px;
+            padding: 3px 5px 0 5px;
+            gap: 3px;
             overflow: hidden;
             background-color: #000000;
             width: 100%;
@@ -122,13 +122,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 2px 0;
+            padding: 1px 0;
             flex-shrink: 0;
         }
 
         .small-logo-wrapper img {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             object-fit: contain;
         }
 
@@ -137,7 +137,7 @@
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             grid-template-rows: repeat(4, minmax(0, 1fr));
-            gap: 5px;
+            gap: 4px;
             flex: 1;
             width: 100%;
             padding-bottom: 2px;
@@ -147,12 +147,12 @@
         .month-card {
             background-color: #1c1c1e;
             border: 1px solid #2c2c2e;
-            border-radius: 10px;
+            border-radius: 9px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 4px 3px;
+            padding: 3px 2px;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s;
             width: 100%;
@@ -167,46 +167,49 @@
 
         .month-name {
             font-weight: 700;
-            font-size: 11px;
+            font-size: 10px;
             color: #0a84ff;
             text-align: center;
+            line-height: 1.1;
             margin-bottom: 1px;
+            flex-shrink: 0;
         }
 
-        /* AYIN İÇİNDEKİ 9 SABİT KALEM LİSTESİ */
+        /* AYIN İÇİNDEKİ SABİT KALEM LİSTESİ */
         .month-items-preview {
             display: flex;
             flex-direction: column;
-            gap: 1px;
+            gap: 0px;
             width: 100%;
             flex: 1;
-            justify-content: space-evenly;
+            justify-content: space-between;
             overflow: hidden;
+            padding: 1px 0;
         }
 
         .preview-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 7.5px;
+            font-size: 6.7px;
             color: #d1d1d6;
             width: 100%;
             padding: 0 1px;
-            line-height: 1;
+            line-height: 1.05;
         }
 
         .preview-label {
             display: flex;
             align-items: center;
-            gap: 2px;
+            gap: 1.5px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 68%;
+            max-width: 65%;
         }
 
         .preview-label span {
-            font-size: 8px;
+            font-size: 7px;
         }
 
         .preview-val-gelir { color: #30d158; font-weight: 600; white-space: nowrap; }
@@ -219,14 +222,16 @@
             align-items: center;
             width: 100%;
             border-top: 1px solid #3a3a3c;
-            padding-top: 2px;
+            padding-top: 1.5px;
             margin-top: 1px;
-            font-size: 8.5px;
+            font-size: 8px;
             font-weight: 600;
+            line-height: 1.1;
+            flex-shrink: 0;
         }
 
-        .sum-bakiye-lbl { color: #8e8e93; font-size: 8px; }
-        .sum-bakiye-val { color: #ffffff; font-size: 8.5px; }
+        .sum-bakiye-lbl { color: #8e8e93; font-size: 7.5px; }
+        .sum-bakiye-val { color: #ffffff; font-size: 8px; }
 
         /* 3. AY DETAY SAYFASI */
         .month-detail-screen {
@@ -368,7 +373,7 @@
         }
 
         .phone-footer {
-            height: 20px;
+            height: 18px;
             display: flex;
             align-items: center;
             justify-content: flex-end;
@@ -405,7 +410,7 @@
         <!-- 12 AY GRID -->
         <div class="months-grid" id="monthsGrid"></div>
 
-        <!-- AY DETAY SAYFASI (9 SABİT + EKSTRA GELİR/GİDER) -->
+        <!-- AY DETAY SAYFASI (SABİT KALEMLER + EKSTRA GELİR/GİDER) -->
         <div class="month-detail-screen" id="monthDetailScreen">
             <div class="detail-header">
                 <button class="back-btn" onclick="aylaraDon()">‹ Aylara Dön</button>
@@ -437,14 +442,8 @@
                     </select>
                 </div>
                 <div class="extra-form-row">
-                    <select id="exHedef" style="flex: 1;">
-                        <option value="8">💵 Maaş / Ek Gelir (Ekle)</option>
-                        <option value="5">📱 Cep Tel (Ekle)</option>
-                        <option value="1">💳 K.Kartı (Ekle)</option>
-                        <option value="7">📌 Diğer (Ekle)</option>
-                        <option value="0">🏦 Kredi (Ekle)</option>
-                    </select>
-                    <input type="number" id="exTutar" placeholder="Tutar (₺)" style="width: 35%;" step="any">
+                    <select id="exHedef" style="flex: 1;"></select>
+                    <input type="number" id="exTutar" placeholder="Tutar (₺)" style="width: 32%;" step="any">
                     <button class="extra-add-btn" onclick="ekstraKalemEkle()">Ekle</button>
                 </div>
             </div>
@@ -463,20 +462,37 @@
             "Eylül", "Ekim", "Kasım", "Aralık"
         ];
 
-        // 9 Sabit Kalem
+        // İstenen Sırayla Sabit Kalemler
         const sabitKalemler = [
+            { ad: "Maaş", simge: "💵", tur: "gelir" },
             { ad: "Kredi", simge: "🏦", tur: "gider" },
             { ad: "K.Kartı", simge: "💳", tur: "gider" },
             { ad: "Elektrik", simge: "⚡", tur: "gider" },
             { ad: "Su", simge: "💧", tur: "gider" },
             { ad: "Doğalgaz", simge: "🔥", tur: "gider" },
-            { ad: "Cep Tel", simge: "📱", tur: "gider" },
             { ad: "İnternet", simge: "🌐", tur: "gider" },
-            { ad: "Diğer", simge: "📌", tur: "gider" },
-            { ad: "Maaş", simge: "💵", tur: "gelir" }
+            { ad: "Ersin cep", simge: "📱", tur: "gider" },
+            { ad: "Nurhayat cep", simge: "📱", tur: "gider" },
+            { ad: "Emre cep", simge: "📱", tur: "gider" },
+            { ad: "Avans", simge: "💰", tur: "gelir" },
+            { ad: "Aidat", simge: "🏢", tur: "gider" },
+            { ad: "Diğer", simge: "📌", tur: "gider" }
         ];
 
         let aktifAyIndex = null;
+
+        // Hedef seçiciyi sabit kalemlere göre doldur
+        (function hedefSecenekleriniDoldur() {
+            const select = document.getElementById("exHedef");
+            sabitKalemler.forEach((kalem, idx) => {
+                const opt = document.createElement("option");
+                opt.value = idx;
+                opt.textContent = `${kalem.simge} ${kalem.ad} (Ekle)`;
+                select.appendChild(opt);
+            });
+            // Varsayılan olarak 'Diğer' seçili gelsin
+            select.value = sabitKalemler.length - 1;
+        })();
 
         document.getElementById("passInput").addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
@@ -498,12 +514,12 @@
         }
 
         function tumVerileriAl() {
-            var veriler = localStorage.getItem("gelirGiderSabitData_v4");
+            var veriler = localStorage.getItem("gelirGiderSabitData_v5");
             return veriler ? JSON.parse(veriler) : {};
         }
 
         function tumVerileriKaydet(data) {
-            localStorage.setItem("gelirGiderSabitData_v4", JSON.stringify(data));
+            localStorage.setItem("gelirGiderSabitData_v5", JSON.stringify(data));
         }
 
         function aylariOlustur() {
@@ -519,12 +535,10 @@
                 let toplamGelir = 0;
                 let toplamGider = 0;
 
-                // Her sabit kalemin toplamını hesapla (sabit + o kaleme ait ekstralar)
                 let previewHTML = "";
                 sabitKalemler.forEach((kalem, kIndex) => {
                     let tutar = parseFloat(ayVerisi.sabit[kIndex]) || 0;
 
-                    // Bu sabit kaleme bağlı ekstraları topla
                     if (ayVerisi.ekstra) {
                         ayVerisi.ekstra.forEach(ex => {
                             if (parseInt(ex.hedef) === kIndex) {
@@ -592,7 +606,6 @@
             const tumVeriler = tumVerileriAl();
             const ayVerisi = tumVeriler[aktifAyIndex] || { sabit: {}, ekstra: [] };
 
-            // 1. Önce 9 Sabit Kalemi Listele
             sabitKalemler.forEach((kalem, kIndex) => {
                 const row = tbody.insertRow();
                 const isGelir = kalem.tur === "gelir";
@@ -610,7 +623,6 @@
                 cellTutar.innerHTML = `<input type="number" class="item-input" placeholder="0" value="${mevcutTutar}" oninput="sabitTutarGuncelle(${kIndex}, this.value)" step="any">`;
             });
 
-            // 2. Sonra Ekstra Eklenen Kalemleri (Gelir / Gider) Listele
             if (ayVerisi.ekstra && ayVerisi.ekstra.length > 0) {
                 ayVerisi.ekstra.forEach((ex, eIndex) => {
                     const row = tbody.insertRow();
@@ -683,7 +695,6 @@
 
             tumVerileriKaydet(tumVeriler);
 
-            // Formu temizle
             document.getElementById("exSimge").value = "";
             document.getElementById("exAd").value = "";
             document.getElementById("exTutar").value = "";
